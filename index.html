@@ -56,6 +56,15 @@ slider2.oninput = function() {
     data.series[0][1] = this.value;
     chart.update(data);
 };
+
+// Updates to/from hash
+var counter = 0
+
+slider.onchange = () => history.pushState(null, null, "#" + ++counter);
+
+slider2.onchange = () => history.pushState(null, null, "#" + ++counter);
+
+window.onhashchange = evt => console.log(evt);
     </script>
   </body>
 </html>
