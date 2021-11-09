@@ -9,6 +9,53 @@
   </head>
   <body>
     <h1>Interactive Plots</h1>
+    <div class="slidecontainer">
+        <input type="range" min="1" max="20" value="5" class="slider" id="myslider1">
+        <input type="range" min="1" max="20" value="5" class="slider" id="myslider2">
+    </div>
+    <div class="ct-chart ct-perfect-fourth"></div>
     <script src="assets/vendor/chartist.min.js"></script>
+    <script>
+var data = {
+  series: [
+    [5, 5, 7, 1, 6, 0],
+    [0, 1, 2, 3, 4, 5],
+    [-2, 4, 3, 2, 5, 1]
+  ]
+};
+
+var options = {
+  showPoint: false,
+  lineSmooth: true,
+  axisX: {
+    showGrid: false,
+    showLabel: false
+  },
+  axisY: {
+    offset: 80,
+    labelInterpolationFnc: function(value) {
+      return value.toFixed(2);
+    }
+  }
+};
+
+var chart = new Chartist.Line('.ct-chart', data, options);
+
+
+// Updates from slider
+var slider = document.getElementById("myslider1");
+
+slider.oninput = function() {
+    data.series[0][0] = this.value;
+    chart.update(data);
+};
+
+var slider2 = document.getElementById("myslider2");
+
+slider2.oninput = function() {
+    data.series[0][1] = this.value;
+    chart.update(data);
+};
+    </script>
   </body>
 </html>
