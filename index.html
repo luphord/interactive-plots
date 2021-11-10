@@ -42,12 +42,17 @@ var chart = new Chartist.Line('.ct-chart', data, options);
 
 
 // Updates from slider
-var slider = document.createElement("input");
-slider.type = "range";
-slider.min = 1;
-slider.max = 20;
-slider.value = 5
-document.getElementsByClassName("slidecontainer")[0].appendChild(slider);
+const createSlider = function(container, min, max, value) {
+  const slider = document.createElement("input");
+  slider.type = "range";
+  slider.min = min;
+  slider.max = max;
+  slider.value = value;
+  container.appendChild(slider);
+  return slider;
+};
+
+var slider = createSlider(document.getElementsByClassName("slidecontainer")[0], 1, 20, 5);
 
 slider.oninput = function() {
     data.series[0][0] = this.value;
