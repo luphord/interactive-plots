@@ -10,7 +10,6 @@
   <body>
     <h1>Interactive Plots</h1>
     <div class="slidecontainer">
-        <input type="range" min="1" max="20" value="5" class="slider" id="myslider1">
         <input type="range" min="1" max="20" value="5" class="slider" id="myslider2">
     </div>
     <div class="ct-chart ct-perfect-fourth"></div>
@@ -43,7 +42,12 @@ var chart = new Chartist.Line('.ct-chart', data, options);
 
 
 // Updates from slider
-var slider = document.getElementById("myslider1");
+var slider = document.createElement("input");
+slider.type = "range";
+slider.min = 1;
+slider.max = 20;
+slider.value = 5
+document.getElementsByClassName("slidecontainer")[0].appendChild(slider);
 
 slider.oninput = function() {
     data.series[0][0] = this.value;
