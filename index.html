@@ -39,26 +39,31 @@ var options = {
 
 var chart = new Chartist.Line('.ct-chart', data, options);
 
-
 // Updates from slider
-const createSlider = function(container, min, max, value) {
+const InteractivePlot = function(container) {
+  this.container = container;
+}
+
+InteractivePlot.prototype.createSlider = function(min, max, value) {
   const slider = document.createElement("input");
   slider.type = "range";
   slider.min = min;
   slider.max = max;
   slider.value = value;
-  container.appendChild(slider);
+  this.container.appendChild(slider);
   return slider;
 };
 
-var slider = createSlider(document.getElementsByClassName("slidecontainer")[0], 1, 20, 5);
+var plt = new InteractivePlot(document.getElementsByClassName("slidecontainer")[0]);
+
+var slider = plt.createSlider(1, 20, 5);
 
 slider.oninput = function() {
     data.series[0][0] = this.value;
     chart.update(data);
 };
 
-var slider2 = createSlider(document.getElementsByClassName("slidecontainer")[0], 1, 20, 5);
+var slider2 = plt.createSlider(1, 20, 5);
 
 slider2.oninput = function() {
     data.series[0][1] = this.value;
