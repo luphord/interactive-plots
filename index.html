@@ -38,12 +38,12 @@ InteractivePlot.prototype.createSlider = function(name, min, max, value) {
   return slider;
 };
 
-InteractivePlot.prototype.createLineChart = function(data, options, updateFunction) {
+InteractivePlot.prototype.createLineChart = function(options, updateFunction) {
   const div = document.createElement("div");
   div.classList.add(".ct-chart");
   div.classList.add("ct-perfect-fourth");
   this.container.appendChild(div);
-  const chart = new Chartist.Line(div, data, options);
+  const chart = new Chartist.Line(div, {}, options);
   this.charts.push({"chart": chart, "updateFunction": updateFunction});
   return chart;
 };
@@ -81,24 +81,25 @@ var options = {
 
 var plt = new InteractivePlot(document.getElementById("container"));
 
-var slider = plt.createSlider("first", 1, 20, 5);
-
-var slider2 = plt.createSlider("second", 1, 20, 5);
-
-var chart = plt.createLineChart(data, options, function(chart, vars) {
+plt.createLineChart(options, function(chart, vars) {
   data.series[0][0] = vars.first;
   data.series[0][1] = vars.second;
   chart.update(data);
 });
 
-// Updates to/from hash
+plt.createSlider("first", 1, 20, 5);
+plt.createSlider("second", 1, 20, 5);
+
+plt.redraw();
+
+/*// Updates to/from hash
 var counter = 0
 
 slider.onchange = () => history.pushState(null, null, "#" + ++counter);
 
 slider2.onchange = () => history.pushState(null, null, "#" + ++counter);
 
-window.onhashchange = evt => console.log(evt);
+window.onhashchange = evt => console.log(evt);*/
     </script>
   </body>
 </html>
