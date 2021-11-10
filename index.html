@@ -16,24 +16,42 @@
 
 const InteractivePlot = function(container) {
   this.container = container;
+  this.sliders = [];
+  this.charts = [];
+  this.vars = {};
 }
 
-InteractivePlot.prototype.createSlider = function(min, max, value) {
+InteractivePlot.prototype.createSlider = function(name, min, max, value) {
   const slider = document.createElement("input");
   slider.type = "range";
   slider.min = min;
   slider.max = max;
   slider.value = value;
+  const that = this;
+  slider.oninput = function() {
+    that.vars[name] = this.value;
+    that.redraw();
+  };
+  this.vars[name] = slider.value;
   this.container.appendChild(slider);
+  this.sliders.push(slider);
   return slider;
 };
 
-InteractivePlot.prototype.createLineChart = function(data, options) {
+InteractivePlot.prototype.createLineChart = function(data, options, updateFunction) {
   const div = document.createElement("div");
   div.classList.add(".ct-chart");
   div.classList.add("ct-perfect-fourth");
   this.container.appendChild(div);
-  return new Chartist.Line(div, data, options);
+  const chart = new Chartist.Line(div, data, options);
+  this.charts.push({"chart": chart, "updateFunction": updateFunction});
+  return chart;
+};
+
+InteractivePlot.prototype.redraw = function() {
+  for (let i=0; i<this.charts.length; i++) {
+    this.charts[i].updateFunction(this.charts[i].chart, this.vars);
+  }
 };
 
 // define sliders and charts
@@ -63,21 +81,15 @@ var options = {
 
 var plt = new InteractivePlot(document.getElementById("container"));
 
-var slider = plt.createSlider(1, 20, 5);
+var slider = plt.createSlider("first", 1, 20, 5);
 
-var slider2 = plt.createSlider(1, 20, 5);
+var slider2 = plt.createSlider("second", 1, 20, 5);
 
-var chart = plt.createLineChart(data, options);
-
-slider.oninput = function() {
-    data.series[0][0] = this.value;
-    chart.update(data);
-};
-
-slider2.oninput = function() {
-    data.series[0][1] = this.value;
-    chart.update(data);
-};
+var chart = plt.createLineChart(data, options, function(chart, vars) {
+  data.series[0][0] = vars.first;
+  data.series[0][1] = vars.second;
+  chart.update(data);
+});
 
 // Updates to/from hash
 var counter = 0
