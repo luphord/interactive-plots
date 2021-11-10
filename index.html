@@ -54,14 +54,21 @@ InteractivePlot.prototype.redraw = function() {
   }
 };
 
+// helpers
+
+const linspace = function(start, stop, n) {
+  x = [];
+  for (let i=0; i<n; i++) {
+    x.push(start + i / (n - 1) * (stop - start))
+  }
+  return x;
+}
+
 // define sliders and charts
 
 var data = {
-  series: [
-    [5, 5, 7, 1, 6, 0],
-    [0, 1, 2, 3, 4, 5],
-    [-2, 4, 3, 2, 5, 1]
-  ]
+  labels: linspace(0, 1, 100),
+  series: [[], []]
 };
 
 var options = {
@@ -81,13 +88,14 @@ var options = {
 
 var plt = new InteractivePlot(document.getElementById("container"));
 
+plt.createSlider("first", 1, 20, 10);
+
 plt.createLineChart(options, function(chart, vars) {
-  data.series[0][0] = vars.first;
-  data.series[0][1] = vars.second;
+  data.series[0] = data.labels.map(t => Math.sin(2*Math.PI*t*vars.first/5));
+  data.series[1] = data.labels.map(t => vars.second * Math.sin(2*Math.PI*t));
   chart.update(data);
 });
 
-plt.createSlider("first", 1, 20, 5);
 plt.createSlider("second", 1, 20, 5);
 
 plt.redraw();
