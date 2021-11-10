@@ -9,11 +9,35 @@
   </head>
   <body>
     <h1>Interactive Plots</h1>
-    <div class="slidecontainer">
+    <div id="container">
     </div>
-    <div class="ct-chart ct-perfect-fourth"></div>
     <script src="assets/vendor/chartist.min.js"></script>
     <script>
+
+const InteractivePlot = function(container) {
+  this.container = container;
+}
+
+InteractivePlot.prototype.createSlider = function(min, max, value) {
+  const slider = document.createElement("input");
+  slider.type = "range";
+  slider.min = min;
+  slider.max = max;
+  slider.value = value;
+  this.container.appendChild(slider);
+  return slider;
+};
+
+InteractivePlot.prototype.createLineChart = function(data, options) {
+  const div = document.createElement("div");
+  div.classList.add(".ct-chart");
+  div.classList.add("ct-perfect-fourth");
+  this.container.appendChild(div);
+  return new Chartist.Line(div, data, options);
+};
+
+// define sliders and charts
+
 var data = {
   series: [
     [5, 5, 7, 1, 6, 0],
@@ -37,33 +61,18 @@ var options = {
   }
 };
 
-var chart = new Chartist.Line('.ct-chart', data, options);
-
-// Updates from slider
-const InteractivePlot = function(container) {
-  this.container = container;
-}
-
-InteractivePlot.prototype.createSlider = function(min, max, value) {
-  const slider = document.createElement("input");
-  slider.type = "range";
-  slider.min = min;
-  slider.max = max;
-  slider.value = value;
-  this.container.appendChild(slider);
-  return slider;
-};
-
-var plt = new InteractivePlot(document.getElementsByClassName("slidecontainer")[0]);
+var plt = new InteractivePlot(document.getElementById("container"));
 
 var slider = plt.createSlider(1, 20, 5);
+
+var slider2 = plt.createSlider(1, 20, 5);
+
+var chart = plt.createLineChart(data, options);
 
 slider.oninput = function() {
     data.series[0][0] = this.value;
     chart.update(data);
 };
-
-var slider2 = plt.createSlider(1, 20, 5);
 
 slider2.oninput = function() {
     data.series[0][1] = this.value;
