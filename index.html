@@ -9,8 +9,14 @@
     <style>
       #container {
         display: grid;
-        grid-template-columns: 65% auto;
-        padding: 10px;
+        grid-template-columns: auto;
+      }
+      @media (min-width: 600px) {
+          #container {
+          display: grid;
+          grid-template-columns: 65% auto;
+          padding: 10px;
+        }
       }
     </style>
   </head>
