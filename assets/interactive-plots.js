@@ -6,10 +6,12 @@ const InteractivePlot = function(container) {
   };
   
   InteractivePlot.prototype.createSlider = function(name, min, max, value) {
-    const slider = document.createElement("input");
-    slider.type = "range";
-    slider.min = min;
-    slider.max = max;
+    const slider = createElement("input", {
+      type: "range",
+      min: min,
+      max: max,
+      value: value
+    });
     slider.value = value;
     const that = this;
     slider.oninput = function() {
@@ -43,6 +45,14 @@ const InteractivePlot = function(container) {
   };
   
   // helpers
+
+  const createElement = function(tag, properties) {
+    const el = document.createElement(tag);
+    for (let key in properties) {
+      el[key] = properties[key];
+    }
+    return el;
+  };
   
   const linspace = function(start, stop, n) {
     x = [];
@@ -50,4 +60,4 @@ const InteractivePlot = function(container) {
       x.push(start + i / (n - 1) * (stop - start))
     }
     return x;
-  }
+  };
