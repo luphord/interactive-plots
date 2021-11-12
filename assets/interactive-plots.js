@@ -18,6 +18,7 @@ const InteractivePlot = function(container) {
     };
     this.vars[name] = slider.value;
     this.container.appendChild(slider);
+    this.container.appendChild(document.createElement("br"))
     this.sliders.push(slider);
     return slider;
   };
