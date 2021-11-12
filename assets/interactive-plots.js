@@ -3,9 +3,14 @@ const InteractivePlot = function(container) {
     this.sliders = [];
     this.charts = [];
     this.vars = {};
+    this.sliderContainer = null;
   };
   
   InteractivePlot.prototype.createSlider = function(name, min, max, value) {
+    if (this.sliderContainer === null) {
+      this.sliderContainer = document.createElement("div");
+      this.container.appendChild(this.sliderContainer);
+    }
     const slider = createElement("input", {
       type: "range",
       min: min,
@@ -19,16 +24,17 @@ const InteractivePlot = function(container) {
       that.redraw();
     };
     this.vars[name] = slider.value;
-    this.container.appendChild(slider);
+    this.sliderContainer.appendChild(slider);
     const label = createElement("label", { for: name, style: "padding-left: 1em" });
     label.innerHTML = (name[0].toUpperCase() + name.slice(1)).big();
-    this.container.appendChild(label);
-    this.container.appendChild(document.createElement("br"));
+    this.sliderContainer.appendChild(label);
+    this.sliderContainer.appendChild(document.createElement("br"));
     this.sliders.push(slider);
     return slider;
   };
   
   InteractivePlot.prototype.createLineChart = function(options, updateFunction) {
+    this.sliderContainer = null;
     const div = document.createElement("div");
     div.classList.add(".ct-chart");
     div.classList.add("ct-perfect-fourth");
