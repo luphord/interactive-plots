@@ -20,7 +20,10 @@ const InteractivePlot = function(container) {
     };
     this.vars[name] = slider.value;
     this.container.appendChild(slider);
-    this.container.appendChild(document.createElement("br"))
+    const label = createElement("label", { for: name, style: "padding-left: 1em" });
+    label.innerHTML = (name[0].toUpperCase() + name.slice(1)).big();
+    this.container.appendChild(label);
+    this.container.appendChild(document.createElement("br"));
     this.sliders.push(slider);
     return slider;
   };
