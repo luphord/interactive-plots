@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Black-Scholes Model</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="assets/vendor/css/jsxgraph.css" rel="stylesheet" type="text/css" />
+    <script src="assets/vendor/js/jsxgraphcore.js" charset="UTF-8"></script>
+    <script src="assets/vendor/js/gaussian-analytics.js"></script>
+  </head>
+  <body>
+
+  <div id="jxgbox" class="jxgbox" style="max-width:600px; margin: auto; aspect-ratio: 1/1;"></div>
+
+
+  <script>
+    var board = JXG.JSXGraph.initBoard('jxgbox', {
+      boundingbox: [-10, 100, 200, -10],
+      axis: true,
+      title: 'asd',
+      showCopyright: false
+    });
+    var strike = board.create('slider',
+      [[10, 80], [70, 80], [0.00001, 100, 200]],
+      { name: 'strike' }
+    );
+    var volatility= board.create('slider',
+      [[10, 70], [70, 70], [0, 0.1, 1]],
+      { name: 'volatility' }
+    );
+    board.create('functiongraph',
+      [
+        spot => Math.max(spot - strike.Value(), 0),
+        0,
+        200
+      ],
+      { strokecolor: 'grey', strokewidth: 3 }
+    );
+    board.create('functiongraph',
+      [
+        spot => eqBlackScholes(
+                  spot,
+                  strike.Value(),
+                  1,
+                  volatility.Value(),
+                  0,
+                  0
+                ).call.price,
+        0,
+        200
+      ],
+      { strokecolor: 'orange', strokewidth: 3 }
+    );
+  </script>
+
+  </body>
+</html>
