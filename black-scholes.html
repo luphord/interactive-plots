@@ -18,7 +18,7 @@
     var board = JXG.JSXGraph.initBoard('jxgbox', {
       boundingbox: [-10, 100, 200, -10],
       axis: true,
-      title: 'asd',
+      title: 'Black-Scholes Model<',
       showCopyright: false
     });
     var xAxisPositive = board.create('line',
@@ -54,6 +54,10 @@
           }
         )
       ]);
+    var maxSpot = function(K, T, sigma, q, r) {
+      const factor = 1.8; // determined by observation
+      return K * Math.exp(factor * sigma * Math.sqrt(T) - (r - q - sigma*sigma / 2) * T);
+    };
     board.create('functiongraph',
       [
         spot => eqBlackScholes(
@@ -65,7 +69,7 @@
                   0
                 ).call.price,
         0,
-        () => strike.X() + 100
+        () => maxSpot(strike.X(), 1, volatility.Value(), 0, 0)
       ],
       { strokecolor: 'orange', strokewidth: 3 }
     );
