@@ -21,17 +21,21 @@
       title: 'asd',
       showCopyright: false
     });
-    var strike = board.create('slider',
-      [[10, 80], [70, 80], [0.00001, 100, 200]],
-      { name: 'strike' }
+    var xAxisPositive = board.create('line',
+      [[0.00001, 0], [100, 0]],
+      { visible: false, straightFirst: false }
+    );
+    var strike = board.create('glider',
+      [100, 0, xAxisPositive],
+      { face: '<>', size: 7, name: 'strike' }
     );
     var volatility= board.create('slider',
       [[10, 70], [70, 70], [0, 0.1, 1]],
       { name: 'volatility' }
     );
-    board.create('functiongraph',
+    payoff=board.create('functiongraph',
       [
-        spot => Math.max(spot - strike.Value(), 0),
+        spot => Math.max(spot - strike.X(), 0),
         0,
         200
       ],
@@ -41,7 +45,7 @@
       [
         spot => eqBlackScholes(
                   spot,
-                  strike.Value(),
+                  strike.X(),
                   1,
                   volatility.Value(),
                   0,
