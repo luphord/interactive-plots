@@ -15,6 +15,22 @@
 
 
   <script>
+    var inTheMoneyAttrs = {
+      straightFirst: false,
+      straightLast: false,
+      strokecolor: 'grey',
+      strokewidth: 3
+    };
+    var outOfTheMoneyAttrs = {
+      straightFirst: false,
+      straightLast: true,
+      strokecolor: 'grey',
+      strokewidth: 3
+    };
+    var optionPriceAttrs = {
+      strokecolor: 'orange',
+      strokewidth: 3
+    };
     var board = JXG.JSXGraph.initBoard('jxgbox', {
       boundingbox: [-10, 100, 200, -10],
       axis: true,
@@ -37,21 +53,11 @@
       [
         board.create('line',
           [[0, 0], [() => strike.X(), 0]],
-          {
-            straightFirst: false,
-            straightLast: false,
-            strokecolor: 'grey',
-            strokewidth: 3
-          }
+          inTheMoneyAttrs
         ),
         board.create('line',
           [[() => strike.X(), 0], [() => strike.X() + 100, 100]],
-          {
-            straightFirst: false,
-            straightLast: true,
-            strokecolor: 'grey',
-            strokewidth: 3
-          }
+          outOfTheMoneyAttrs
         )
       ]);
     var maxSpot = function(K, T, sigma, q, r) {
@@ -71,7 +77,7 @@
         0,
         () => maxSpot(strike.X(), 1, volatility.Value(), 0, 0)
       ],
-      { strokecolor: 'orange', strokewidth: 3 }
+      optionPriceAttrs
     );
   </script>
 
