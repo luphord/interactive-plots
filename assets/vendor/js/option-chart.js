@@ -49,19 +49,23 @@ OptionChart.prototype.npv = function (spot) {
     return sum;
 };
 
-OptionChart.prototype.addCall = function () {
-    const inTheMoneyAttrs = {
+OptionChart.prototype.getPayoffAttrs = function () {
+    return {
         straightFirst: false,
         straightLast: false,
         strokecolor: 'grey',
-        strokewidth: 3
+        strokewidth: 2
     };
-    const outOfTheMoneyAttrs = {
-        straightFirst: false,
-        straightLast: true,
-        strokecolor: 'grey',
-        strokewidth: 3
-    };
+};
+
+OptionChart.prototype.addCall = function () {
+    const color = 'grey';
+    const inTheMoneyAttrs = this.getPayoffAttrs();
+    inTheMoneyAttrs.strokecolor = color;
+    const outOfTheMoneyAttrs = this.getPayoffAttrs();
+    outOfTheMoneyAttrs.straightLast = true;
+    outOfTheMoneyAttrs.strokecolor = color;
+    
     var strike = board.create('glider',
         [100, 0, this.xAxisPositive],
         { face: '<>', size: 7, name: 'strike' }
