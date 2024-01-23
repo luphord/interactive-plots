@@ -3,6 +3,7 @@ var OptionChart = function (board) {
         throw new Error("OptionChart needs to be created using the 'new' keyword!");
     }
 
+    this.seed = 1;
     this.board = board;
     this.options = [];
     this.xAxisPositive = board.create('line',
@@ -49,6 +50,17 @@ OptionChart.prototype.npv = function (spot) {
     return sum;
 };
 
+
+
+OptionChart.prototype.random = function () {
+    let x = Math.sin(this.seed++) * 10000;
+    return x - Math.floor(x);
+}
+
+OptionChart.prototype.nextColor = function () {
+    return JXG.hsv2rgb(this.random() * 360, 0.9, 0.8) + 'AA';
+};
+
 OptionChart.prototype.getPayoffAttrs = function () {
     return {
         straightFirst: false,
@@ -59,13 +71,13 @@ OptionChart.prototype.getPayoffAttrs = function () {
 };
 
 OptionChart.prototype.addCall = function () {
-    const color = 'grey';
+    const color = this.nextColor();
     const inTheMoneyAttrs = this.getPayoffAttrs();
     inTheMoneyAttrs.strokecolor = color;
     const outOfTheMoneyAttrs = this.getPayoffAttrs();
     outOfTheMoneyAttrs.straightLast = true;
     outOfTheMoneyAttrs.strokecolor = color;
-    
+
     var strike = board.create('glider',
         [100, 0, this.xAxisPositive],
         { face: '<>', size: 7, name: 'strike' }
