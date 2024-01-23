@@ -10,7 +10,7 @@ var OptionChart = function (board) {
         { visible: false, straightFirst: false }
     );
     this.volatility = board.create('slider',
-        [[10, 70], [70, 70], [0, 0.1, 1]],
+        [[-40, 20], [-40, 80], [0, 0.1, 1.23]],
         { name: 'volatility' }
     );
 
