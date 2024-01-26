@@ -68,13 +68,17 @@ OptionChart.prototype.getOptionPayoffAttrs = function () {
     }
 };
 
+OptionChart.prototype._createStrike = function (initialStrike) {
+    return board.create('glider',
+        [initialStrike, 0, this.xAxisPositive],
+        { face: '<>', size: 7, name: 'strike' }
+    );
+};
+
 OptionChart.prototype.addCall = function () {
     const attrs = this.getOptionPayoffAttrs();
 
-    const strike = board.create('glider',
-        [100, 0, this.xAxisPositive],
-        { face: '<>', size: 7, name: 'strike' }
-    );
+    const strike = this._createStrike(110);
     const payoff = board.create('group',
         [
             board.create('line',
@@ -106,10 +110,7 @@ OptionChart.prototype.addCall = function () {
 OptionChart.prototype.addPut = function () {
     const attrs = this.getOptionPayoffAttrs();
 
-    const strike = board.create('glider',
-        [100, 0, this.xAxisPositive],
-        { face: '<>', size: 7, name: 'strike' }
-    );
+    const strike = this._createStrike(90);
     const payoff = board.create('group',
         [
             board.create('line',
