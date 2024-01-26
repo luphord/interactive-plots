@@ -78,9 +78,13 @@ OptionChart.prototype._getOptionPayoffAttrs = function () {
     const outOfTheMoneyAttrs = this._getOptionPayoffLineAttrs();
     outOfTheMoneyAttrs.straightLast = true;
     outOfTheMoneyAttrs.strokecolor = color;
+    const discontinuityAttrs = this._getOptionPayoffLineAttrs();
+    discontinuityAttrs.strokecolor = color;
+    discontinuityAttrs.dash = 1;
     return {
         inTheMoneyAttrs: inTheMoneyAttrs,
-        outOfTheMoneyAttrs: outOfTheMoneyAttrs
+        outOfTheMoneyAttrs: outOfTheMoneyAttrs,
+        discontinuityAttrs: discontinuityAttrs
     }
 };
 
@@ -145,6 +149,7 @@ OptionChart.prototype.addDigitalCall = function () {
     const attrs = this._getOptionPayoffAttrs();
 
     const strike = this._createStrike(attrs.inTheMoneyAttrs.strokecolor, 120);
+    const notional = 20;
     const payoff = board.create('group',
         [
             board.create('line',
@@ -152,7 +157,11 @@ OptionChart.prototype.addDigitalCall = function () {
                 attrs.inTheMoneyAttrs
             ),
             board.create('line',
-                [[() => strike.X(), 20], [() => strike.X() + 100, 20]],
+                [[() => strike.X(), 0], [() => strike.X(), notional]],
+                attrs.discontinuityAttrs
+            ),
+            board.create('line',
+                [[() => strike.X(), notional], [() => strike.X() + 100, notional]],
                 attrs.outOfTheMoneyAttrs
             )
         ]
@@ -161,7 +170,7 @@ OptionChart.prototype.addDigitalCall = function () {
     this._options.push({
         strike: strike,
         payoff: payoff,
-        npv: (spot) => this._eqBlackScholes(strike, spot).digitalCall.price * 20
+        npv: (spot) => this._eqBlackScholes(strike, spot).digitalCall.price * notional
     });
     this._board.update();
 };
@@ -170,11 +179,16 @@ OptionChart.prototype.addDigitalPut = function () {
     const attrs = this._getOptionPayoffAttrs();
 
     const strike = this._createStrike(attrs.inTheMoneyAttrs.strokecolor, 80);
+    const notional = 20;
     const payoff = board.create('group',
         [
             board.create('line',
-                [[0, 20], [() => strike.X(), 20]],
+                [[0, notional], [() => strike.X(), notional]],
                 attrs.inTheMoneyAttrs
+            ),
+            board.create('line',
+                [[() => strike.X(), notional], [() => strike.X(), 0]],
+                attrs.discontinuityAttrs
             ),
             board.create('line',
                 [[() => strike.X(), 0], [() => strike.X() + 100, 0]],
@@ -186,7 +200,7 @@ OptionChart.prototype.addDigitalPut = function () {
     this._options.push({
         strike: strike,
         payoff: payoff,
-        npv: (spot) => this._eqBlackScholes(strike, spot).digitalPut.price * 20
+        npv: (spot) => this._eqBlackScholes(strike, spot).digitalPut.price * notional
     });
     this._board.update();
 };
