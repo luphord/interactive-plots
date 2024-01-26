@@ -46,7 +46,7 @@ OptionChart.prototype.nextColor = function () {
     return JXG.hsv2rgb(this.random() * 360, 0.9, 0.8) + 'AA';
 };
 
-OptionChart.prototype.getPayoffAttrs = function () {
+OptionChart.prototype.getOptionPayoffLineAttrs = function () {
     return {
         straightFirst: false,
         straightLast: false,
@@ -55,27 +55,35 @@ OptionChart.prototype.getPayoffAttrs = function () {
     };
 };
 
-OptionChart.prototype.addCall = function () {
+OptionChart.prototype.getOptionPayoffAttrs = function () {
     const color = this.nextColor();
-    const inTheMoneyAttrs = this.getPayoffAttrs();
+    const inTheMoneyAttrs = this.getOptionPayoffLineAttrs();
     inTheMoneyAttrs.strokecolor = color;
-    const outOfTheMoneyAttrs = this.getPayoffAttrs();
+    const outOfTheMoneyAttrs = this.getOptionPayoffLineAttrs();
     outOfTheMoneyAttrs.straightLast = true;
     outOfTheMoneyAttrs.strokecolor = color;
+    return {
+        inTheMoneyAttrs: inTheMoneyAttrs,
+        outOfTheMoneyAttrs: outOfTheMoneyAttrs
+    }
+};
 
-    let strike = board.create('glider',
+OptionChart.prototype.addCall = function () {
+    const attrs = this.getOptionPayoffAttrs();
+
+    const strike = board.create('glider',
         [100, 0, this.xAxisPositive],
         { face: '<>', size: 7, name: 'strike' }
     );
-    let payoff = board.create('group',
+    const payoff = board.create('group',
         [
             board.create('line',
                 [[0, 0], [() => strike.X(), 0]],
-                inTheMoneyAttrs
+                attrs.inTheMoneyAttrs
             ),
             board.create('line',
                 [[() => strike.X(), 0], [() => strike.X() + 100, 100]],
-                outOfTheMoneyAttrs
+                attrs.outOfTheMoneyAttrs
             )
         ]
     );
@@ -96,26 +104,21 @@ OptionChart.prototype.addCall = function () {
 };
 
 OptionChart.prototype.addPut = function () {
-    const color = this.nextColor();
-    const inTheMoneyAttrs = this.getPayoffAttrs();
-    inTheMoneyAttrs.strokecolor = color;
-    const outOfTheMoneyAttrs = this.getPayoffAttrs();
-    outOfTheMoneyAttrs.straightLast = true;
-    outOfTheMoneyAttrs.strokecolor = color;
+    const attrs = this.getOptionPayoffAttrs();
 
-    let strike = board.create('glider',
+    const strike = board.create('glider',
         [100, 0, this.xAxisPositive],
         { face: '<>', size: 7, name: 'strike' }
     );
-    let payoff = board.create('group',
+    const payoff = board.create('group',
         [
             board.create('line',
                 [[0, () => strike.X()], [() => strike.X(), 0]],
-                inTheMoneyAttrs
+                attrs.inTheMoneyAttrs
             ),
             board.create('line',
                 [[() => strike.X(), 0], [() => strike.X() + 100, 0]],
-                outOfTheMoneyAttrs
+                attrs.outOfTheMoneyAttrs
             )
         ]
     );
