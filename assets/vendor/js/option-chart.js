@@ -10,12 +10,13 @@ var OptionChart = function (board) {
         [[0.00001, 0], [100, 0]],
         { visible: false, straightFirst: false }
     );
+    const controlsX = -40;
     this._volatility = board.create('slider',
-        [[-40, 50], [-40, 90], [0, 0.1, 1.23]],
+        [[controlsX, 50], [-40, 90], [0, 0.1, 1.23]],
         { name: 'volatility' }
     );
-    board.create('button', [-40, 40, 'Add Call', () => this.addCall()]);
-    board.create('button', [-40, 30, 'Add Put', () => this.addPut()]);
+    board.create('button', [controlsX, 40, 'Add Call', () => this.addCall()]);
+    board.create('button', [controlsX, 30, 'Add Put', () => this.addPut()]);
 
     const optionPriceAttrs = {
         strokecolor: 'orange',
@@ -70,17 +71,17 @@ OptionChart.prototype._getOptionPayoffAttrs = function () {
     }
 };
 
-OptionChart.prototype._createStrike = function (initialStrike) {
+OptionChart.prototype._createStrike = function (color, initialStrike) {
     return board.create('glider',
         [initialStrike, 0, this._xAxisPositive],
-        { face: '<>', size: 7, name: 'strike' }
+        { face: '<>', strokecolor: color, fillcolor: color, size: 7, name: 'strike' }
     );
 };
 
 OptionChart.prototype.addCall = function () {
     const attrs = this._getOptionPayoffAttrs();
 
-    const strike = this._createStrike(110);
+    const strike = this._createStrike(attrs.inTheMoneyAttrs.strokecolor, 110);
     const payoff = board.create('group',
         [
             board.create('line',
@@ -112,7 +113,7 @@ OptionChart.prototype.addCall = function () {
 OptionChart.prototype.addPut = function () {
     const attrs = this._getOptionPayoffAttrs();
 
-    const strike = this._createStrike(90);
+    const strike = this._createStrike(attrs.inTheMoneyAttrs.strokecolor, 90);
     const payoff = board.create('group',
         [
             board.create('line',
