@@ -18,6 +18,7 @@ var OptionChart = function (board) {
     board.create('button', [controlsX, 40, 'Call', () => this.addCall()]);
     board.create('button', [controlsX, 30, 'Put', () => this.addPut()]);
     board.create('button', [controlsX, 20, 'Up Digi', () => this.addDigitalCall()]);
+    board.create('button', [controlsX, 10, 'Down Digi', () => this.addDigitalPut()]);
 
     const optionPriceAttrs = {
         strokecolor: 'orange',
@@ -171,6 +172,38 @@ OptionChart.prototype.addDigitalCall = function () {
             0,
             0
         ).digitalCall.price * 20
+    });
+    this._board.update();
+};
+
+OptionChart.prototype.addDigitalPut = function () {
+    const attrs = this._getOptionPayoffAttrs();
+
+    const strike = this._createStrike(attrs.inTheMoneyAttrs.strokecolor, 80);
+    const payoff = board.create('group',
+        [
+            board.create('line',
+                [[0, 20], [() => strike.X(), 20]],
+                attrs.inTheMoneyAttrs
+            ),
+            board.create('line',
+                [[() => strike.X(), 0], [() => strike.X() + 100, 0]],
+                attrs.outOfTheMoneyAttrs
+            )
+        ]
+    );
+
+    this._options.push({
+        strike: strike,
+        payoff: payoff,
+        npv: (spot) => eqBlackScholes(
+            spot,
+            strike.X(),
+            1,
+            this._volatility.Value(),
+            0,
+            0
+        ).digitalPut.price * 20
     });
     this._board.update();
 };
