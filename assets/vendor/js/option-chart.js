@@ -93,3 +93,42 @@ OptionChart.prototype.addCall = function () {
         ).call.price
     });
 };
+
+OptionChart.prototype.addPut = function () {
+    const color = this.nextColor();
+    const inTheMoneyAttrs = this.getPayoffAttrs();
+    inTheMoneyAttrs.strokecolor = color;
+    const outOfTheMoneyAttrs = this.getPayoffAttrs();
+    outOfTheMoneyAttrs.straightLast = true;
+    outOfTheMoneyAttrs.strokecolor = color;
+
+    let strike = board.create('glider',
+        [100, 0, this.xAxisPositive],
+        { face: '<>', size: 7, name: 'strike' }
+    );
+    let payoff = board.create('group',
+        [
+            board.create('line',
+                [[0, () => strike.X()], [() => strike.X(), 0]],
+                inTheMoneyAttrs
+            ),
+            board.create('line',
+                [[() => strike.X(), 0], [() => strike.X() + 100, 0]],
+                outOfTheMoneyAttrs
+            )
+        ]
+    );
+
+    this.options.push({
+        strike: strike,
+        payoff: payoff,
+        npv: (spot) => eqBlackScholes(
+            spot,
+            strike.X(),
+            1,
+            this.volatility.Value(),
+            0,
+            0
+        ).put.price
+    });
+};
