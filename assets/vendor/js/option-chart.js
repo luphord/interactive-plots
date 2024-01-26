@@ -63,11 +63,11 @@ OptionChart.prototype.addCall = function () {
     outOfTheMoneyAttrs.straightLast = true;
     outOfTheMoneyAttrs.strokecolor = color;
 
-    var strike = board.create('glider',
+    let strike = board.create('glider',
         [100, 0, this.xAxisPositive],
         { face: '<>', size: 7, name: 'strike' }
     );
-    board.create('group',
+    let payoff = board.create('group',
         [
             board.create('line',
                 [[0, 0], [() => strike.X(), 0]],
@@ -77,9 +77,12 @@ OptionChart.prototype.addCall = function () {
                 [[() => strike.X(), 0], [() => strike.X() + 100, 100]],
                 outOfTheMoneyAttrs
             )
-        ]);
+        ]
+    );
 
     this.options.push({
+        strike: strike,
+        payoff: payoff,
         npv: (spot) => eqBlackScholes(
             spot,
             strike.X(),
