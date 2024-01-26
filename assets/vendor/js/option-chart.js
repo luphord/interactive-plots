@@ -23,7 +23,8 @@ var OptionChart = function (board) {
 
     const optionPriceAttrs = {
         strokecolor: 'orange',
-        strokewidth: 3
+        strokewidth: 3,
+        layer: 20
     };
     board.create('functiongraph',
         [
