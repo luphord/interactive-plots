@@ -23,23 +23,10 @@ var OptionChart = function (board) {
         [
             spot => this.npv(spot),
             0,
-            () => this.maxSpot()
+            1000
         ],
         optionPriceAttrs
     );
-};
-
-OptionChart.prototype._maxSpot = function (K, T, sigma, q, r) {
-    const factor = 1.8; // determined by observation
-    return K * Math.exp(factor * sigma * Math.sqrt(T) - (r - q - sigma * sigma / 2) * T);
-};
-
-OptionChart.prototype.maxSpot = function () {
-    let max = 100;
-    for (let i = 0; i < this.options.length; i++) {
-        max = Math.max(max, this.options[i].maxSpot());
-    }
-    return max;
 };
 
 OptionChart.prototype.npv = function (spot) {
@@ -49,8 +36,6 @@ OptionChart.prototype.npv = function (spot) {
     }
     return sum;
 };
-
-
 
 OptionChart.prototype.random = function () {
     let x = Math.sin(this.seed++) * 10000;
@@ -102,7 +87,6 @@ OptionChart.prototype.addCall = function () {
             this.volatility.Value(),
             0,
             0
-        ).call.price,
-        maxSpot: () => this._maxSpot(strike.X(), 1, this.volatility.Value(), 0, 0)
+        ).call.price
     });
 };
