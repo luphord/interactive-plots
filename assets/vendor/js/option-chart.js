@@ -4,6 +4,7 @@ var OptionChart = function (board) {
     }
 
     this._seed = 1;
+    this._colorOffset = 0;
     this._board = board;
     this._options = [];
     this._xAxisPositive = board.create('line',
@@ -59,7 +60,7 @@ OptionChart.prototype._random = function () {
 };
 
 OptionChart.prototype._nextColor = function () {
-    return JXG.hsv2rgb(this._random() * 360, 0.9, 0.8) + 'AA';
+    return JXG.hsv2rgb(this._colorOffset++ * 65, 0.9, 0.8) + 'AA';
 };
 
 OptionChart.prototype._getOptionPayoffLineAttrs = function () {
