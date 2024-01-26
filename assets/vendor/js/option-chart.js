@@ -92,6 +92,7 @@ OptionChart.prototype.addCall = function () {
             0
         ).call.price
     });
+    this.board.update();
 };
 
 OptionChart.prototype.addPut = function () {
@@ -131,4 +132,5 @@ OptionChart.prototype.addPut = function () {
             0
         ).put.price
     });
+    this.board.update();
 };
