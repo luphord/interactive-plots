@@ -42,10 +42,21 @@ OptionChart.prototype.npv = function (spot) {
     return sum;
 };
 
+OptionChart.prototype._eqBlackScholes = function (strike, spot) {
+    return eqBlackScholes(
+        spot,
+        strike.X(),
+        1,
+        this._volatility.Value(),
+        0,
+        0
+    );
+};
+
 OptionChart.prototype._random = function () {
     let x = Math.sin(this._seed++) * 10000;
     return x - Math.floor(x);
-}
+};
 
 OptionChart.prototype._nextColor = function () {
     return JXG.hsv2rgb(this._random() * 360, 0.9, 0.8) + 'AA';
@@ -100,14 +111,7 @@ OptionChart.prototype.addCall = function () {
     this._options.push({
         strike: strike,
         payoff: payoff,
-        npv: (spot) => eqBlackScholes(
-            spot,
-            strike.X(),
-            1,
-            this._volatility.Value(),
-            0,
-            0
-        ).call.price
+        npv: (spot) => this._eqBlackScholes(strike, spot).call.price
     });
     this._board.update();
 };
@@ -132,14 +136,7 @@ OptionChart.prototype.addPut = function () {
     this._options.push({
         strike: strike,
         payoff: payoff,
-        npv: (spot) => eqBlackScholes(
-            spot,
-            strike.X(),
-            1,
-            this._volatility.Value(),
-            0,
-            0
-        ).put.price
+        npv: (spot) => this._eqBlackScholes(strike, spot).put.price
     });
     this._board.update();
 };
@@ -164,14 +161,7 @@ OptionChart.prototype.addDigitalCall = function () {
     this._options.push({
         strike: strike,
         payoff: payoff,
-        npv: (spot) => eqBlackScholes(
-            spot,
-            strike.X(),
-            1,
-            this._volatility.Value(),
-            0,
-            0
-        ).digitalCall.price * 20
+        npv: (spot) => this._eqBlackScholes(strike, spot).digitalCall.price * 20
     });
     this._board.update();
 };
@@ -196,14 +186,7 @@ OptionChart.prototype.addDigitalPut = function () {
     this._options.push({
         strike: strike,
         payoff: payoff,
-        npv: (spot) => eqBlackScholes(
-            spot,
-            strike.X(),
-            1,
-            this._volatility.Value(),
-            0,
-            0
-        ).digitalPut.price * 20
+        npv: (spot) => this._eqBlackScholes(strike, spot).digitalPut.price * 20
     });
     this._board.update();
 };
