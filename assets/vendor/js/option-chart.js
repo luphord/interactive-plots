@@ -11,9 +11,11 @@ var OptionChart = function (board) {
         { visible: false, straightFirst: false }
     );
     this._volatility = board.create('slider',
-        [[-40, 20], [-40, 80], [0, 0.1, 1.23]],
+        [[-40, 50], [-40, 90], [0, 0.1, 1.23]],
         { name: 'volatility' }
     );
+    board.create('button', [-40, 40, 'Add Call', () => this.addCall()]);
+    board.create('button', [-40, 30, 'Add Put', () => this.addPut()]);
 
     const optionPriceAttrs = {
         strokecolor: 'orange',
