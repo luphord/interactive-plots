@@ -17,7 +17,7 @@ var OptionChart = function (board) {
     };
     const controlsX = -40;
     this._volatility = board.create('slider',
-        [[controlsX, 50], [-40, 90], [0, 0.1, 1.23]],
+        [[controlsX - 15, 10], [controlsX - 15, 50], [0, 0.1, 1.23]],
         { name: 'volatility' }
     );
     board.create('button', [controlsX, 40, 'Call', () => this.addCall()]);
