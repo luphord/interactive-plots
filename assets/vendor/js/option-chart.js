@@ -65,7 +65,7 @@ OptionChart.prototype.npv = function (spot) {
     return sum;
 };
 
-OptionChart.prototype._eqBlackScholes = function (strike, spot) {
+OptionChart.prototype._eqBlackScholes = function (strike, spot, participation) {
     try {
         return eqBlackScholes(
             spot,
@@ -73,7 +73,8 @@ OptionChart.prototype._eqBlackScholes = function (strike, spot) {
             1,
             this._volatility.Value(),
             0,
-            0
+            0,
+            participation
         );
     }
     catch {
@@ -131,6 +132,7 @@ OptionChart.prototype.addCall = function () {
         110 + this._strikeControlOffset,
         this._strikeControlOffset);
     const strike = () => control.X() - this._strikeControlOffset;
+    const participation = () => control.Y() / this._strikeControlOffset;
     const payoff = board.create('group',
         [
             control,
@@ -149,7 +151,7 @@ OptionChart.prototype.addCall = function () {
         control: control,
         minControl: this._strikeControlOffset,
         payoff: payoff,
-        npv: (spot) => this._eqBlackScholes(strike(), spot).call.price
+        npv: (spot) => this._eqBlackScholes(strike(), spot, participation()).call.price
     });
     this._board.update();
 };
@@ -162,6 +164,7 @@ OptionChart.prototype.addPut = function () {
         90 - this._strikeControlOffset,
         this._strikeControlOffset);
     const strike = () => control.X() + this._strikeControlOffset;
+    const participation = () => control.Y() / this._strikeControlOffset;
     const payoff = board.create('group',
         [
             board.create('line',
@@ -179,7 +182,7 @@ OptionChart.prototype.addPut = function () {
         control: control,
         minControl: -this._strikeControlOffset,
         payoff: payoff,
-        npv: (spot) => this._eqBlackScholes(strike(), spot).put.price
+        npv: (spot) => this._eqBlackScholes(strike(), spot, participation()).put.price
     });
     this._board.update();
 };
@@ -192,6 +195,7 @@ OptionChart.prototype.addDigitalCall = function () {
         attrs.inTheMoneyAttrs.strokecolor,
         120,
         notional);
+    const participation = () => control.Y() / notional;
     const payoff = board.create('group',
         [
             board.create('line',
@@ -213,7 +217,7 @@ OptionChart.prototype.addDigitalCall = function () {
         control: control,
         minControl: 0,
         payoff: payoff,
-        npv: (spot) => this._eqBlackScholes(control.X(), spot).digitalCall.price * notional
+        npv: (spot) => this._eqBlackScholes(control.X(), spot, participation()).digitalCall.price * notional
     });
     this._board.update();
 };
@@ -226,6 +230,7 @@ OptionChart.prototype.addDigitalPut = function () {
         attrs.inTheMoneyAttrs.strokecolor,
         80,
         notional);
+    const participation = () => control.Y() / notional;
     const payoff = board.create('group',
         [
             board.create('line',
@@ -247,7 +252,7 @@ OptionChart.prototype.addDigitalPut = function () {
         control: control,
         minControl: 0,
         payoff: payoff,
-        npv: (spot) => this._eqBlackScholes(control.X(), spot).digitalPut.price * notional
+        npv: (spot) => this._eqBlackScholes(control.X(), spot, participation()).digitalPut.price * notional
     });
     this._board.update();
 };
