@@ -8,10 +8,6 @@ var OptionChart = function (board) {
     this._strikeControlOffset = 20;
     this._board = board;
     this._options = [];
-    this._xAxisPositive = board.create('line',
-        [[0.00001, 0], [100, 0]],
-        { visible: false, straightFirst: false }
-    );
     const optionUndefined = { price: undefined };
     this._errorObject = {
         call: optionUndefined,
