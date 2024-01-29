@@ -51,7 +51,7 @@ OptionChart.prototype._onUpdate = function () {
         const control = this._options[i].control;
         control.moveTo([
             Math.max(this._options[i].minControl + 0.00001, control.X()),
-            this._strikeControlOffset //control.Y()
+            control.Y()
         ]);
     }
     this._board.unsuspendUpdate();
@@ -139,7 +139,7 @@ OptionChart.prototype.addCall = function () {
                 attrs.inTheMoneyAttrs
             ),
             board.create('line',
-                [[strike, 0], [() => control.X(), control.Y()]],
+                [[strike, 0], [() => control.X(), () => control.Y()]],
                 attrs.outOfTheMoneyAttrs
             )
         ]
@@ -229,7 +229,7 @@ OptionChart.prototype.addDigitalPut = function () {
     const payoff = board.create('group',
         [
             board.create('line',
-                [[0, control.Y()], [() => control.X(), () => control.Y()]],
+                [[0, () => control.Y()], [() => control.X(), () => control.Y()]],
                 attrs.inTheMoneyAttrs
             ),
             board.create('line',
