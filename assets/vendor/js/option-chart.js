@@ -165,7 +165,7 @@ OptionChart.prototype.addPut = function () {
     const payoff = board.create('group',
         [
             board.create('line',
-                [[() => control.X(), () => control.Y()], [strike, 0]],
+                [[0, () => control.Y() * strike() / this._strikeControlOffset], [strike, 0]],
                 attrs.inTheMoneyAttrs
             ),
             board.create('line',
