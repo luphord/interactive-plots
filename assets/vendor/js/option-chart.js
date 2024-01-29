@@ -5,12 +5,20 @@ var OptionChart = function (board) {
 
     this._seed = 1;
     this._colorOffset = 0;
+    this._strikeControlOffset = 20;
     this._board = board;
     this._options = [];
     this._xAxisPositive = board.create('line',
         [[0.00001, 0], [100, 0]],
         { visible: false, straightFirst: false }
     );
+    const optionUndefined = { price: undefined };
+    this._errorObject = {
+        call: optionUndefined,
+        put: optionUndefined,
+        digitalCall: optionUndefined,
+        digitalPut: optionUndefined
+    };
     const controlsX = -40;
     this._volatility = board.create('slider',
         [[controlsX, 50], [-40, 90], [0, 0.1, 1.23]],
@@ -34,6 +42,19 @@ var OptionChart = function (board) {
         ],
         optionPriceAttrs
     );
+    board.on('move', () => this._onUpdate());
+};
+
+OptionChart.prototype._onUpdate = function () {
+    this._board.suspendUpdate();
+    for (let i = 0; i < this._options.length; i++) {
+        const control = this._options[i].control;
+        control.moveTo([
+            Math.max(this._options[i].minControl + 0.00001, control.X()),
+            this._strikeControlOffset //control.Y()
+        ]);
+    }
+    this._board.unsuspendUpdate();
 };
 
 OptionChart.prototype.npv = function (spot) {
@@ -45,14 +66,19 @@ OptionChart.prototype.npv = function (spot) {
 };
 
 OptionChart.prototype._eqBlackScholes = function (strike, spot) {
-    return eqBlackScholes(
-        spot,
-        strike.X(),
-        1,
-        this._volatility.Value(),
-        0,
-        0
-    );
+    try {
+        return eqBlackScholes(
+            spot,
+            strike,
+            1,
+            this._volatility.Value(),
+            0,
+            0
+        );
+    }
+    catch {
+        return this._errorObject;
+    }
 };
 
 OptionChart.prototype._random = function () {
@@ -90,34 +116,40 @@ OptionChart.prototype._getOptionPayoffAttrs = function () {
     }
 };
 
-OptionChart.prototype._createStrike = function (color, initialStrike) {
-    return board.create('glider',
-        [initialStrike, 0, this._xAxisPositive],
-        { face: '<>', strokecolor: color, fillcolor: color, size: 7, name: 'strike' }
+OptionChart.prototype._createControl = function (color, x0, y0) {
+    return board.create('point',
+        [x0, y0],
+        { face: 'o', strokecolor: color, fillcolor: color, size: 6, name: '' }
     );
 };
 
 OptionChart.prototype.addCall = function () {
     const attrs = this._getOptionPayoffAttrs();
 
-    const strike = this._createStrike(attrs.inTheMoneyAttrs.strokecolor, 110);
+    const control = this._createControl(
+        attrs.inTheMoneyAttrs.strokecolor,
+        110 + this._strikeControlOffset,
+        this._strikeControlOffset);
+    const strike = () => control.X() - this._strikeControlOffset;
     const payoff = board.create('group',
         [
+            control,
             board.create('line',
-                [[0, 0], [() => strike.X(), 0]],
+                [[0, 0], [strike, 0]],
                 attrs.inTheMoneyAttrs
             ),
             board.create('line',
-                [[() => strike.X(), 0], [() => strike.X() + 100, 100]],
+                [[strike, 0], [() => control.X(), control.Y()]],
                 attrs.outOfTheMoneyAttrs
             )
         ]
     );
 
     this._options.push({
-        strike: strike,
+        control: control,
+        minControl: this._strikeControlOffset,
         payoff: payoff,
-        npv: (spot) => this._eqBlackScholes(strike, spot).call.price
+        npv: (spot) => this._eqBlackScholes(strike(), spot).call.price
     });
     this._board.update();
 };
@@ -125,24 +157,29 @@ OptionChart.prototype.addCall = function () {
 OptionChart.prototype.addPut = function () {
     const attrs = this._getOptionPayoffAttrs();
 
-    const strike = this._createStrike(attrs.inTheMoneyAttrs.strokecolor, 90);
+    const control = this._createControl(
+        attrs.inTheMoneyAttrs.strokecolor,
+        90 - this._strikeControlOffset,
+        this._strikeControlOffset);
+    const strike = () => control.X() + this._strikeControlOffset;
     const payoff = board.create('group',
         [
             board.create('line',
-                [[0, () => strike.X()], [() => strike.X(), 0]],
+                [[() => control.X(), () => control.Y()], [strike, 0]],
                 attrs.inTheMoneyAttrs
             ),
             board.create('line',
-                [[() => strike.X(), 0], [() => strike.X() + 100, 0]],
+                [[() => strike, 0], [() => strike + 100, 0]],
                 attrs.outOfTheMoneyAttrs
             )
         ]
     );
 
     this._options.push({
-        strike: strike,
+        control: control,
+        minControl: -this._strikeControlOffset,
         payoff: payoff,
-        npv: (spot) => this._eqBlackScholes(strike, spot).put.price
+        npv: (spot) => this._eqBlackScholes(strike(), spot).put.price
     });
     this._board.update();
 };
@@ -150,29 +187,33 @@ OptionChart.prototype.addPut = function () {
 OptionChart.prototype.addDigitalCall = function () {
     const attrs = this._getOptionPayoffAttrs();
 
-    const strike = this._createStrike(attrs.inTheMoneyAttrs.strokecolor, 120);
     const notional = 20;
+    const control = this._createControl(
+        attrs.inTheMoneyAttrs.strokecolor,
+        120,
+        notional);
     const payoff = board.create('group',
         [
             board.create('line',
-                [[0, 0], [() => strike.X(), 0]],
+                [[0, 0], [() => control.X(), 0]],
                 attrs.inTheMoneyAttrs
             ),
             board.create('line',
-                [[() => strike.X(), 0], [() => strike.X(), notional]],
+                [[() => control.X(), 0], [() => control.X(), () => control.Y()]],
                 attrs.discontinuityAttrs
             ),
             board.create('line',
-                [[() => strike.X(), notional], [() => strike.X() + 100, notional]],
+                [[() => control.X(), () => control.Y()], [() => control.X() + 100, () => control.Y()]],
                 attrs.outOfTheMoneyAttrs
             )
         ]
     );
 
     this._options.push({
-        strike: strike,
+        control: control,
+        minControl: 0,
         payoff: payoff,
-        npv: (spot) => this._eqBlackScholes(strike, spot).digitalCall.price * notional
+        npv: (spot) => this._eqBlackScholes(control.X(), spot).digitalCall.price * notional
     });
     this._board.update();
 };
@@ -180,29 +221,33 @@ OptionChart.prototype.addDigitalCall = function () {
 OptionChart.prototype.addDigitalPut = function () {
     const attrs = this._getOptionPayoffAttrs();
 
-    const strike = this._createStrike(attrs.inTheMoneyAttrs.strokecolor, 80);
     const notional = 20;
+    const control = this._createControl(
+        attrs.inTheMoneyAttrs.strokecolor,
+        80,
+        notional);
     const payoff = board.create('group',
         [
             board.create('line',
-                [[0, notional], [() => strike.X(), notional]],
+                [[0, control.Y()], [() => control.X(), () => control.Y()]],
                 attrs.inTheMoneyAttrs
             ),
             board.create('line',
-                [[() => strike.X(), notional], [() => strike.X(), 0]],
+                [[() => control.X(), () => control.Y()], [() => control.X(), 0]],
                 attrs.discontinuityAttrs
             ),
             board.create('line',
-                [[() => strike.X(), 0], [() => strike.X() + 100, 0]],
+                [[() => control.X(), 0], [() => control.X() + 100, 0]],
                 attrs.outOfTheMoneyAttrs
             )
         ]
     );
 
     this._options.push({
-        strike: strike,
+        control: control,
+        minControl: 0,
         payoff: payoff,
-        npv: (spot) => this._eqBlackScholes(strike, spot).digitalPut.price * notional
+        npv: (spot) => this._eqBlackScholes(control.X(), spot).digitalPut.price * notional
     });
     this._board.update();
 };
